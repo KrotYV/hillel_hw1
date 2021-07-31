@@ -32,3 +32,33 @@ if __name__ == '__main__':
     assert parse('http://example.com/?name={r\"}') == {'name': '{r"}'}
     assert parse('http://example.com/?=') == {}
     assert parse('=http://example.com/?') == {}
+
+def parse_cookie(query: str) -> dict:
+    dict_res = dict()
+    for el in query.split(';'):
+        index_1 = el.find('=')
+        if index_1 != -1 and index_1 != 0:
+            dict_res[el[:index_1]] = el[index_1 + 1:]
+
+    return dict_res
+
+
+if __name__ == '__main__':
+    assert parse_cookie('name=Dima;') == {'name': 'Dima'}
+    assert parse_cookie('') == {}
+    assert parse_cookie('name=Dima;age=28;') == {'name': 'Dima', 'age': '28'}
+    assert parse_cookie('name=Dima=User;age=28;') == {'name': 'Dima=User', 'age': '28'}
+
+    assert parse_cookie('=Dima') == {}
+    assert parse_cookie('name==Dima;') == {'name': '=Dima'}
+    assert parse_cookie('name=Dima=Userage=28;') == {'name': 'Dima=Userage=28'}
+    assert parse_cookie('name=Dima=User;age=28;weight=76;;;city=Kharkov;school=hillel') == {'name': 'Dima=User', 'age': '28', 'weight': '76', 'city': 'Kharkov', 'school': 'hillel'}
+    assert parse_cookie('=;?*=;') == {'?*': ''}
+    assert parse_cookie('name=Dima;;;;age=28;') == {'name': 'Dima', 'age': '28'}
+    assert parse_cookie('name=Dima;age=28;color=blue;season=spring;day=monday') == {'name': 'Dima', 'age': '28', 'color': 'blue', 'season': 'spring', 'day': 'monday'}
+    assert parse_cookie('name=') == {'name': ''}
+    assert parse_cookie('=') == {}
+    assert parse_cookie('name=Alex;age=44;user_name=aleXx;school=hillel') == {'name': 'Alex', 'age': '44', 'user_name': 'aleXx', 'school': 'hillel'}
+
+
+
